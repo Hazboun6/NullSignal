@@ -73,6 +73,9 @@ Longitude = np.linspace(0, LongRange/180.*np.pi, LongRange, endpoint=False)
 iterations = np.arange(100)
 IterLength = len(iterations)
 
+phi = 0 #Polarization angle of the pulsars
+NoiseCoeff = 1 #Here we pull noises from the csv file, but if not we need this noise coefficient.
+
 T0=time.time()
 
 PulsarIndex = np.arange(0, 18)
@@ -80,7 +83,7 @@ PulsarCombo =  list(itertools.combinations(PulsarIndex, 3))
 """Makes a list of all combinations of 18 choose 3.
 """
 
-filename = "NoiseRealization_P18_NG_GWB_Rank.dat"
+filename = "NoiseRealization_P18_NG_Noise.dat"
 Total = np.memmap(filename, dtype = 'float32', mode = 'w+', shape = (180,360,10000))
 #Initialize files
 
@@ -88,6 +91,7 @@ T4 = time.time() #Time stamp for keeping track of the iterations.
 print("Time Check #0:", T4-T0) #See how long the file intialization takes.
 
 for Round in range(0, 10000//IterLength):
+    #Loop of 100 sky maps at a time in an array.
     ProductIter = np.zeros((len(Latitude),IterLength,len(Longitude)))
 
     for Iter in range(0 , len(PulsarCombo)):
@@ -107,6 +111,7 @@ for Round in range(0, 10000//IterLength):
     jj = Round*IterLength + IterLength
 
     Total[:,:,ii:jj] = Product #Add these 100 iterations to the file in storage. 
+    
     del Product
     T3 = time.time()
     print("Round:",Round, " Time Check #2:", T3-T0)
